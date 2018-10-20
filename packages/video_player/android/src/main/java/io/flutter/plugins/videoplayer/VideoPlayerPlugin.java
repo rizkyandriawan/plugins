@@ -99,9 +99,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     private MediaSource buildMediaSource(
-                      return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
-//
-//    Uri uri, DataSource.Factory mediaDataSourceFactory, Context context) {
+        Uri uri, DataSource.Factory mediaDataSourceFactory, Context context) {
 //      int type = Util.inferContentType(uri.getLastPathSegment());
 //      switch (type) {
 //        case C.TYPE_SS:
@@ -115,7 +113,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 //                  new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
 //              .createMediaSource(uri);
 //        case C.TYPE_HLS:
-//          return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
+          return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
 //        case C.TYPE_OTHER:
 //          return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
 //              .setExtractorsFactory(new DefaultExtractorsFactory())
