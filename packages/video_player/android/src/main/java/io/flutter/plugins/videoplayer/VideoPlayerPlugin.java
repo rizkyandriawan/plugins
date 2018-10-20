@@ -100,6 +100,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
     private MediaSource buildMediaSource(
         Uri uri, DataSource.Factory mediaDataSourceFactory, Context context) {
+
 //      int type = Util.inferContentType(uri.getLastPathSegment());
 //      switch (type) {
 //        case C.TYPE_SS:
@@ -191,7 +192,12 @@ public class VideoPlayerPlugin implements MethodCallHandler {
     }
 
     void play() {
-      exoPlayer.setPlayWhenReady(true);
+      try {
+        exoPlayer.setPlayWhenReady(true);
+        System.out.println("PRINTING WHEN PLAY");
+      }catch(Exception es){
+        es.printStackTrace();
+      }
     }
 
     void pause() {
