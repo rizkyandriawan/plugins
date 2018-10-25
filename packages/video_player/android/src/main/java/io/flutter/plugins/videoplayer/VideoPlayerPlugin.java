@@ -102,6 +102,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         exoPlayer = ExoPlayerFactory.newSimpleInstance( renderersFactory, new DefaultTrackSelector());
       }catch(Exception es) {
+        es.printStackTrace();
         exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
       }
 
