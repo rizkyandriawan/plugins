@@ -87,9 +87,10 @@ public class VideoPlayerPlugin implements MethodCallHandler {
         Result result) {
       this.eventChannel = eventChannel;
       this.textureEntry = textureEntry;
-
+      System.out.println("VIDEODEBUG 1");
       TrackSelector trackSelector = new DefaultTrackSelector();
       try{
+        System.out.println("VIDEODEBUG 2");
         HttpMediaDrmCallback drmCallback = new HttpMediaDrmCallback("https://widevine-proxy.appspot.com/proxy/",
                 new DefaultHttpDataSourceFactory("user-agent"));
 
@@ -97,17 +98,21 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                 FrameworkMediaDrm.newInstance(C.WIDEVINE_UUID),
                 drmCallback,
                 null, new Handler(), null);
+        System.out.println("VIDEODEBUG 3");
         RenderersFactory renderersFactory = new DefaultRenderersFactory(context, drmSessionManager);
         CookieManager cookieManager = new CookieManager();
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+        System.out.println("VIDEODEBUG 4");
         exoPlayer = ExoPlayerFactory.newSimpleInstance( renderersFactory, new DefaultTrackSelector());
+        System.out.println("VIDEODEBUG 5");
       }catch(Exception es) {
+        System.out.println("VIDEODEBUG 1ERROR");
         es.printStackTrace();
         exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
       }
 
       Uri uri = Uri.parse(dataSource);
-
+      System.out.println("VIDEODEBUG 7");
       DataSource.Factory dataSourceFactory;
       if (uri.getScheme().equals("asset") || uri.getScheme().equals("file")) {
         dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
@@ -120,39 +125,16 @@ public class VideoPlayerPlugin implements MethodCallHandler {
                 DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
                 true);
       }
-
+      System.out.println("VIDEODEBUG 8");
       MediaSource mediaSource = buildMediaSource(uri, dataSourceFactory, context);
       exoPlayer.prepare(mediaSource);
-
+      System.out.println("VIDEODEBUG 9");
       setupVideoPlayer(eventChannel, textureEntry, result);
     }
 
     private MediaSource buildMediaSource(
         Uri uri, DataSource.Factory mediaDataSourceFactory, Context context) {
-
-//      int type = Util.inferContentType(uri.getLastPathSegment());
-//      switch (type) {
-//        case C.TYPE_SS:
-//          return new SsMediaSource.Factory(
-//                  new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-//                  new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
-//              .createMediaSource(uri);
-//        case C.TYPE_DASH:
-//          return new DashMediaSource.Factory(
-//                  new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-//                  new DefaultDataSourceFactory(context, null, mediaDataSourceFactory))
-//              .createMediaSource(uri);
-//        case C.TYPE_HLS:
           return new HlsMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
-//        case C.TYPE_OTHER:
-//          return new ExtractorMediaSource.Factory(mediaDataSourceFactory)
-//              .setExtractorsFactory(new DefaultExtractorsFactory())
-//              .createMediaSource(uri);
-//        default:
-//          {
-//            throw new IllegalStateException("Unsupported type: " + type);
-//          }
-//      }
     }
 
     private void setupVideoPlayer(
