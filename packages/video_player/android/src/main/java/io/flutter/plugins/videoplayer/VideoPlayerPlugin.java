@@ -4,6 +4,18 @@
 
 package io.flutter.plugins.videoplayer;
 
+import android.os.Handler;
+import com.google.android.exoplayer2.*;
+import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
+import com.google.android.exoplayer2.drm.FrameworkMediaDrm;
+import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+
 import static com.google.android.exoplayer2.Player.REPEAT_MODE_ALL;
 import static com.google.android.exoplayer2.Player.REPEAT_MODE_OFF;
 
@@ -33,6 +45,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -63,6 +76,7 @@ public class VideoPlayerPlugin implements MethodCallHandler {
 
     private final EventChannel eventChannel;
 
+
     private boolean isInitialized = false;
 
     VideoPlayer(
@@ -75,7 +89,21 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       this.textureEntry = textureEntry;
 
       TrackSelector trackSelector = new DefaultTrackSelector();
-      exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+      try{
+        HttpMediaDrmCallback drmCallback = new HttpMediaDrmCallback("https://widevine-proxy.appspot.com/proxy/",
+                new DefaultHttpDataSourceFactory("user-agent"));
+
+        DrmSessionManager drmSessionManager = new DefaultDrmSessionManager(C.WIDEVINE_UUID,
+                FrameworkMediaDrm.newInstance(C.WIDEVINE_UUID),
+                drmCallback,
+                null, new Handler(), null);
+        RenderersFactory renderersFactory = new DefaultRenderersFactory(context, drmSessionManager);
+        CookieManager cookieManager = new CookieManager();
+        cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+        exoPlayer = ExoPlayerFactory.newSimpleInstance( renderersFactory, new DefaultTrackSelector());
+      }catch(Exception es) {
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+      }
 
       Uri uri = Uri.parse(dataSource);
 
